@@ -7,7 +7,7 @@ import { MdEmail, MdLock, MdPerson } from "react-icons/md"
 
 const Register: React.FC = () => {
     const [errorFlags, setErrorFlags] = useState([false, false, false, false]);
-    const authForm = useSelector((root: RootState) => root.authForm)
+    const authForm = useSelector((root: RootState) => root.authForm);
     const dispatch = useDispatch();
     /** Clear form value when mount */
     useEffect(() => {
@@ -141,6 +141,16 @@ const Register: React.FC = () => {
                         setErrorFlags([!authForm.name ,!authForm.email , !authForm.password , !authForm.passwordCheck])
                         return;
                     }
+                    if(authForm.password !== authForm.passwordCheck) {
+                        setErrorFlags((pre) => {
+                            const newFlags = [...pre];
+                            newFlags[2] = true;
+                            newFlags[3] = true;
+                            return newFlags
+                        })
+                        return;
+                    }
+                    dispatch(ActionCreators.request.register());
                 }}
             >
                 {"註冊"}

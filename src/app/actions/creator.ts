@@ -52,5 +52,20 @@ export const request = {
                 }
             }
         }
+    },
+    register: () => {
+        return async (getState: ()=> RootState, dispatch: Function) => {
+            try{
+                const authForm = getState().authForm;
+                await API.register(authForm.email, authForm.name, authForm.password);
+                dispatch(control.switchLoginAndRegister());
+            }catch (err: any) {
+                if(axios.isAxiosError(err)) {
+                    if(err.response?.status === 400) {
+                        
+                    }
+                }
+            }
+        }
     }
 }
