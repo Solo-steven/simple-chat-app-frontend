@@ -1,17 +1,31 @@
 import React from "react";
 import { ChakraProvider } from "@chakra-ui/react";
 import { Provider } from "react-redux";
+import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom"
 import store from "./app/store";
 import Auth from "./pages/Auth";
+import DashBoard from "./pages/Dashboard";
 import "./asset/animation.css";
 
 const App: React.FC = () => {
     return (
-        <Provider store={store}>
-            <ChakraProvider>
-                <Auth />
-            </ChakraProvider>
-        </Provider>
+        <BrowserRouter>
+            <Provider store={store}>
+                <ChakraProvider>
+                    <Switch>
+                        <Route exact path="/">
+                            <Redirect to="auth"/>
+                        </Route>
+                        <Route exact path="/auth">
+                            <Auth />
+                        </Route>
+                        <Route exact path="/dashboard">
+                            <DashBoard />
+                        </Route>
+                    </Switch>
+                </ChakraProvider>
+            </Provider>
+        </BrowserRouter>
     );
 };
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Redirect } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../app/reducer";
 import * as ActionCreators from "../../app/actions/creator";
@@ -8,11 +9,17 @@ import { MdEmail, MdLock } from "react-icons/md"
 const Login: React.FC = () => {
     const [errorFlags, setErrorFlags] = useState([false, false]);
     const authForm = useSelector((root: RootState) => root.authForm);
+    const authFlag = useSelector((root: RootState) => root.control.authFlag);
     const dispatch = useDispatch();
     /** Clear form value when mount */
     useEffect(() => {
         dispatch(ActionCreators.authForm.clearForm())
     }, [dispatch]);
+    if(authFlag) 
+        return <Redirect to={{
+            pathname: "/dashboard",
+            state: { from: "login" },
+        }} />
     return (
         <Box
             borderRadius="30px"
@@ -89,6 +96,7 @@ const Login: React.FC = () => {
                         setErrorFlags([!authForm.email, !authForm.password]);
                         return;
                     }
+                    dispatch(ActionCreators.request.login())
                 }}
             >
                 {"登入"}

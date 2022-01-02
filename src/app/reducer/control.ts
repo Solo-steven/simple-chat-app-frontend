@@ -2,10 +2,12 @@ import { control } from "../actions/type";
 
 export interface ControlState  {
     switchLoginAndRegisterFlag: boolean;
+    authFlag: boolean,
 };
 
 const initialState: ControlState = {
     switchLoginAndRegisterFlag: false,
+    authFlag: false,
 }
 
 export function ControlReducer(state: ControlState = initialState, action: any) {
@@ -13,6 +15,9 @@ export function ControlReducer(state: ControlState = initialState, action: any) 
     switch(action.type) {
         case  control.switchLoginAndRegister:
             newState.switchLoginAndRegisterFlag = !state.switchLoginAndRegisterFlag;
+            break;
+        case control.taggleAuth:
+            newState.authFlag = action.payload;
             break;
         default:
             break;
