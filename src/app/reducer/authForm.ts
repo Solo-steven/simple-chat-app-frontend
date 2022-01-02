@@ -14,9 +14,12 @@ const initialState: AuthFormState = {
     passwordCheck: "",
 };
 
-export function AuthFormReduce(state: AuthFormState = initialState, action: any) {
+export function AuthFormReducer(state: AuthFormState = initialState, action: any) {
     let newState = Object.assign({},state);
     switch (action.type) {
+        case authForm.clearForm:
+            newState = {...initialState};
+            break;
         case authForm.changeEmail:
             newState.email = action.payload;
             break;

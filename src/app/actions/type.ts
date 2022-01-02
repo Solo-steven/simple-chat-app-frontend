@@ -4,6 +4,7 @@ export const control = {
 };
 
 export const authForm = {
+    clearForm: "AuthForm/Clear_From",
     changeEmail: "AuthForm/Change_Email",
     changeName: "AuthForm/Change_Name",
     changePassword: "AuthForm/Change_Password",

@@ -44,7 +44,7 @@ const Auth: React.FC = () => {
                         classNames="fade"
                     >
                         { 
-                           switchLoginAndRegisterFlag ?  <Login/> : <Register/>
+                           switchLoginAndRegisterFlag ?   <Register/>: <Login/>
                         }
                     </CSSTransition>
                 </SwitchTransition>

@@ -7,6 +7,9 @@ export const control = {
 }
 
 export const authForm = {
+    clearForm: () => ({
+        type: Type.authForm.clearForm
+    }),
     changeEmail: (email: string) => ({
         type: Type.authForm.changeEmail,
         payload: email

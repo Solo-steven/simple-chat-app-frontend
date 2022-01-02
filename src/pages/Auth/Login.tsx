@@ -1,11 +1,18 @@
-import React from "react";
-import { useDispatch } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../app/reducer";
 import * as ActionCreators from "../../app/actions/creator";
 import { Box, Input, InputGroup, InputLeftElement, Icon, Button, Text } from "@chakra-ui/react";
 import { MdEmail, MdLock } from "react-icons/md"
 
 const Login: React.FC = () => {
+    const [errorFlags, setErrorFlags] = useState([false, false]);
+    const authForm = useSelector((root: RootState) => root.authForm);
     const dispatch = useDispatch();
+    /** Clear form value when mount */
+    useEffect(() => {
+        dispatch(ActionCreators.authForm.clearForm())
+    }, [dispatch]);
     return (
         <Box
             borderRadius="30px"
@@ -28,14 +35,36 @@ const Login: React.FC = () => {
                     color="#000000"
                     children={<Icon as={MdEmail}/>}
                 />
-                <Input border="1px solid #000000" borderColor="#000000" _hover={{border: "1px solid #000000"}}/>
+                <Input 
+                    isInvalid={errorFlags[0]}
+                    value={authForm.email}
+                    color="#000000"
+                    border="1px solid #000000" 
+                    borderColor="#000000" 
+                    _hover={{border: "1px solid #000000"}}
+                    onChange={(e) => { 
+                        if(errorFlags[0]) setErrorFlags(pre => [ false, pre[1]])
+                        dispatch(ActionCreators.authForm.changeEmail(e.target.value)) 
+                   } }
+                />
             </InputGroup>
             <InputGroup marginBottom="10px">
                 <InputLeftElement
                     color="#000000"
                     children={<Icon as={MdLock}/>}
                 />
-                <Input border="1px solid #000000" borderColor="#000000" _hover={{border: "1px solid #000000"}}/>
+                <Input 
+                    isInvalid={errorFlags[1]}
+                    value={authForm.password}
+                    color="#000000"
+                    border="1px solid #000000" 
+                    borderColor="#000000" 
+                    _hover={{border: "1px solid #000000"}}
+                    onChange={(e) => { 
+                        if(errorFlags[1]) setErrorFlags(pre => [pre[0], false]);
+                        dispatch(ActionCreators.authForm.changePassword(e.target.value))
+                    }}
+                />
             </InputGroup>
             <Text
                 width="100%"
@@ -55,6 +84,12 @@ const Login: React.FC = () => {
                 _hover={{color:"#FFFFFF", background:"#146CF0"}}
                 _active={{color:"#FFFFFF", background:"#146CF0"}}
                 marginBottom="15px"
+                onClick={() => {
+                    if( !authForm.email ||  !authForm.password) {
+                        setErrorFlags([!authForm.email, !authForm.password]);
+                        return;
+                    }
+                }}
             >
                 {"登入"}
             </Button>
