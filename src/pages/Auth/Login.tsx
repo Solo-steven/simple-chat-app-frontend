@@ -9,7 +9,7 @@ import { MdEmail, MdLock } from "react-icons/md"
 const Login: React.FC = () => {
     const [errorFlags, setErrorFlags] = useState([false, false]);
     const authForm = useSelector((root: RootState) => root.authForm);
-    const authFlag = useSelector((root: RootState) => root.control.authFlag);
+    const authFlag = useSelector((root: RootState) => root.control.auth.flag);
     const dispatch = useDispatch();
     /** Clear form value when mount */
     useEffect(() => {

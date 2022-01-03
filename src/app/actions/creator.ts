@@ -7,9 +7,9 @@ export const control = {
     switchLoginAndRegister: () => ({
         type: Type.control.switchLoginAndRegister
     }),
-    taggleAuth: (flag: boolean = true) => ({
-        type: Type.control.taggleAuth,
-        payload: flag
+    setAuth: (token: string) => ({
+        type: Type.control.setAuth,
+        payload: token
     }),
     taggleModal: (flag: boolean = true, type: string ="success", title: string = "", body: string="")  => ({
         type: Type.control.taggleModal,
@@ -44,8 +44,8 @@ export const request = {
         return async (getState: () => RootState, dispatch: Function) => {
             try{
                 const authForm = getState().authForm;
-                await API.login(authForm.email, authForm.password);
-                dispatch(control.taggleAuth());
+                const { token } = await API.login(authForm.email, authForm.password);
+                dispatch(control.setAuth(token));
             }catch(err: any){
                 if(axios.isAxiosError(err)) {
                     if(err.response?.status === 404) {

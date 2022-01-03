@@ -1,33 +1,29 @@
 import React from "react";
-import { ChakraProvider } from "@chakra-ui/react";
-import { Provider } from "react-redux";
-import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
-import store from "./app/store";
+import { useSelector } from "react-redux";
+import { RootState } from "./app/reducer";
+import { Switch, Route, Redirect } from "react-router-dom";
 import Modal from "./components/Modal";
 import Auth from "./pages/Auth";
 import DashBoard from "./pages/Dashboard";
 import "./asset/animation.css";
 
 const App: React.FC = () => {
+    const authFlag = useSelector((root: RootState) => root.control.auth.flag);
     return (
-        <BrowserRouter>
-            <Provider store={store}>
-                <ChakraProvider>
-                    <Switch>
-                        <Route exact path="/">
-                            <Redirect to="auth"/>
-                        </Route>
-                        <Route exact path="/auth">
-                            <Auth />
-                        </Route>
-                        <Route exact path="/dashboard">
-                            <DashBoard />
-                        </Route>
-                    </Switch>
-                    <Modal />
-                </ChakraProvider>
-            </Provider>
-        </BrowserRouter>
+        <>
+            <Switch>
+                <Route exact path="/">
+                    {authFlag ? <Redirect to="/dashboard"/> : <Redirect to="auth"/>}
+                </Route>
+                <Route exact path="/auth">
+                    <Auth />
+                </Route>
+                <Route exact path="/dashboard">
+                    {authFlag ? <DashBoard /> : <Redirect to="auth"/>}
+                </Route>
+            </Switch>
+            <Modal />
+        </>
     );
 };
 

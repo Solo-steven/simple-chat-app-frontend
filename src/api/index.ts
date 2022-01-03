@@ -14,3 +14,8 @@ export async function register(email: string, name: string, password: string) {
         .then(response => response.data)
         .catch(error => { throw error});
 }
+export async function refresh() {
+    return await Header.post("/auth/refresh")
+        .then(response => response.data)
+        .catch(error => { throw error});
+}

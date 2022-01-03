@@ -2,7 +2,10 @@ import { control } from "../actions/type";
 
 export interface ControlState  {
     switchLoginAndRegisterFlag: boolean;
-    authFlag: boolean,
+    auth: {
+        flag: boolean,
+        token: string,
+    },
     modal: {
         flag: boolean,
         type: string,
@@ -13,7 +16,10 @@ export interface ControlState  {
 
 const initialState: ControlState = {
     switchLoginAndRegisterFlag: false,
-    authFlag: false,
+    auth: { 
+        flag: false,
+        token: "",
+    },
     modal: {
         flag: false,
         type: "",
@@ -28,8 +34,11 @@ export function ControlReducer(state: ControlState = initialState, action: any) 
         case  control.switchLoginAndRegister:
             newState.switchLoginAndRegisterFlag = !state.switchLoginAndRegisterFlag;
             break;
-        case control.taggleAuth:
-            newState.authFlag = action.payload;
+        case control.setAuth:
+            newState.auth = {
+                flag: true,
+                token: action.payload,
+            };
             break;
         case control.taggleModal:
             newState.modal = { ...action.payload};
