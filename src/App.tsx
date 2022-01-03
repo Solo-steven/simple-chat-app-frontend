@@ -1,8 +1,9 @@
 import React from "react";
 import { ChakraProvider } from "@chakra-ui/react";
 import { Provider } from "react-redux";
-import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom"
+import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import store from "./app/store";
+import Modal from "./components/Modal";
 import Auth from "./pages/Auth";
 import DashBoard from "./pages/Dashboard";
 import "./asset/animation.css";
@@ -23,6 +24,7 @@ const App: React.FC = () => {
                             <DashBoard />
                         </Route>
                     </Switch>
+                    <Modal />
                 </ChakraProvider>
             </Provider>
         </BrowserRouter>

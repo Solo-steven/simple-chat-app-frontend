@@ -1,6 +1,7 @@
 export const control = {
     switchLoginAndRegister: "Control/switch_login_and_register",
     taggleAuth: "Control/taggle_Auth",
+    taggleModal: "AuthForm/taggle_Modal"
 };
 
 export const authForm = {

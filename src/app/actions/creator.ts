@@ -10,6 +10,10 @@ export const control = {
     taggleAuth: (flag: boolean = true) => ({
         type: Type.control.taggleAuth,
         payload: flag
+    }),
+    taggleModal: (flag: boolean = true, type: string ="success", title: string = "", body: string="")  => ({
+        type: Type.control.taggleModal,
+        payload: { flag, type, title, body }
     })
 }
 
@@ -45,11 +49,20 @@ export const request = {
             }catch(err: any){
                 if(axios.isAxiosError(err)) {
                     if(err.response?.status === 404) {
-
+                        dispatch(control.taggleModal(
+                            true,"error", "使用者名稱錯誤"
+                        ))
+                        return;
                     }else if (err.response?.status === 402) {
-                        
+                        dispatch(control.taggleModal(
+                            true, "error", "使用者密碼錯誤"
+                        ))
+                        return;
                     }
                 }
+                dispatch(control.taggleModal(
+                    true, "error", "發生未知的錯誤，請再試一次"
+                ))
             }
         }
     },
@@ -62,9 +75,15 @@ export const request = {
             }catch (err: any) {
                 if(axios.isAxiosError(err)) {
                     if(err.response?.status === 400) {
-                        
+                        dispatch(control.taggleModal(
+                            true, "error", "信箱已經被使用"
+                        ))
+                        return;
                     }
                 }
+                dispatch(control.taggleModal(
+                    true, "error", "發生未知的錯誤，請再試一次"
+                ))
             }
         }
     }
