@@ -1,9 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector  } from "react-redux";
 import { RootState } from "../../app/reducer";
 import * as ActionCreators from "../../app/actions/creator";
-import { HStack, Box, Flex , Icon, Text } from "@chakra-ui/react";
-import { MdAdsClick } from "react-icons/md";
+import { VStack, HStack, Flex , Icon, Text, Input, Avatar, IconButton } from "@chakra-ui/react";
+import { MdAdsClick, MdSend } from "react-icons/md";
 
 
 const Message: React.FC = () => {
@@ -28,7 +28,7 @@ const Message: React.FC = () => {
         }
     }, [dispatch, user, currentFriend, message]);
     // when to return a skeleton.
-    if(message.length ===0 )
+    if(currentFriend === "" )
         return (
             <Flex grow={1} height="full" justify="center">
                 <HStack spacing={4}>
@@ -38,9 +38,58 @@ const Message: React.FC = () => {
             </Flex>
         )
     return (
-      <Box>
-
-      </Box>  
+      <VStack flexGrow={1} height="full">
+          <VStack flexGrow={1} color="#000000" width="full" overflow="auto">
+                {message
+                    .sort((frist, second) =>{
+                        const fristDate = new Date(frist.timestamp);
+                        const secondDate = new Date(second.timestamp)
+                        if(fristDate > secondDate)
+                            return 1;
+                        return -1;
+                    })
+                    .map(message => (
+                        <Flex
+                            width="100%"
+                            justify={message.sender === user.email ? "flex-end" : "flex-start"}
+                            padding="1.2% 5%"
+                            key={message.timestamp}
+                        >
+                            <Text 
+                                borderRadius="10px"
+                                backgroundColor="#838383" 
+                                color="#FAFAFA" 
+                                padding="15px 25px"
+                            >
+                                {message.content}
+                            </Text>
+                        </Flex>
+                    ))
+                }
+          </VStack>
+          <HStack  
+            height="115px"
+            width="100%"
+            borderTop="1px solid #838383"
+            borderColor="#838383"
+            padding="3% 5%"
+            spacing={3}
+          >
+                <Avatar name={user.name} width="60px" height="60px" backgroundColor="#838383" color="#FAFAFA"/>
+                <Input 
+                    color="#000000"
+                    border="1px solid #000000" 
+                    borderColor="#000000" 
+                    _hover={{border: "1px solid #000000"}}
+                />
+                <IconButton
+                    variant='outline'
+                    fontSize='20px'
+                    aria-label='send'
+                    icon={<Icon color="#146CF0" as={MdSend}/>}
+                />
+          </HStack>
+      </VStack>  
     );
 };
 

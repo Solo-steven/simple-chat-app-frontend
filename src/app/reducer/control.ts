@@ -1,17 +1,21 @@
 import { control } from "../actions/type";
 
 export interface ControlState  {
+    // control login form or register form.
     switchLoginAndRegisterFlag: boolean;
+    // control auth info 
     auth: {
         flag: boolean,
         token: string,
     },
+    // control modal info
     modal: {
         flag: boolean,
         type: string,
         title: string,
         body: string,
     },
+    // control which friend is telling to.
     currentFriend: string,
 };
 
