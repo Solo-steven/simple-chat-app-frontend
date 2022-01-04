@@ -1,35 +1,40 @@
-import React, { useEffect } from "react";
-import { useDispatch, useSelector  } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../app/reducer";
 import * as ActionCreators from "../../app/actions/creator";
-import { VStack, HStack, Flex , Icon, Text, Input, Avatar, IconButton } from "@chakra-ui/react";
+import { VStack, HStack, Flex, Icon, Text, Input, Avatar, IconButton } from "@chakra-ui/react";
 import { MdAdsClick, MdSend } from "react-icons/md";
+import { useSocketEmit } from "../../socket";
 
 
 const Message: React.FC = () => {
+    //  ===== Input ===== //
+    // don't need to put in redux, because if not using on middleware for request 
+    const [messageInput, setMessageInput] = useState("");
+    // ===== Other Hooks ===== //
+    const emit = useSocketEmit();
     const dispatch = useDispatch();
     // ===== Data Part ===== //
     const currentFriend = useSelector((root: RootState) => root.control.currentFriend);
     const user = useSelector((root: RootState) => root.cache.user);
     const message = useSelector((root: RootState) => {
         const currentFriend = root.control.currentFriend;
-        for(let i = 0 ; i < root.cache.friends.length; i ++) {
-            if(root.cache.friends[i].email === currentFriend)
+        for (let i = 0; i < root.cache.friends.length; i++) {
+            if (root.cache.friends[i].email === currentFriend)
                 return root.cache.friends[i].message;
         }
         return [];
     });
-    console.log(message)
     // if data not exist, when and how to fetch data.
     useEffect(() => {
         // user-email and currentFriend data is control by User.tsx component.
-        if(currentFriend !== "" && message.length === 0) {
+        if (currentFriend !== "" && message.length === 0) {
             dispatch(ActionCreators.request.getMessage());
             return;
         }
     }, [dispatch, currentFriend, message]);
     // when to return a skeleton.
-    if(currentFriend === "" )
+    if (currentFriend === "")
         return (
             <Flex grow={1} height="full" justify="center">
                 <HStack spacing={4}>
@@ -38,18 +43,17 @@ const Message: React.FC = () => {
                 </HStack>
             </Flex>
         )
-    console.log(message.map(message => message))
     return (
-      <VStack flexGrow={1} height="full">
-          <VStack flexGrow={1} color="#000000" width="full" overflow="auto">
+        <VStack flexGrow={1} height="full">
+            <VStack flexGrow={1} color="#000000" width="full" overflow="auto">
                 {message
-                    .sort((frist, second) =>{
+                    .sort((frist, second) => {
                         const fristDate = new Date(frist.timestamp);
                         const secondDate = new Date(second.timestamp)
-                        if(fristDate >= secondDate)
+                        if (fristDate >= secondDate)
                             return 1;
                         return -1;
-                        
+
                     })
                     .map((message, index) => (
                         <Flex
@@ -58,10 +62,10 @@ const Message: React.FC = () => {
                             padding="1.2% 5%"
                             key={index}
                         >
-                            <Text 
+                            <Text
                                 borderRadius="10px"
-                                backgroundColor="#838383" 
-                                color="#FAFAFA" 
+                                backgroundColor="#838383"
+                                color="#FAFAFA"
                                 padding="15px 25px"
                             >
                                 {message.content}
@@ -69,30 +73,37 @@ const Message: React.FC = () => {
                         </Flex>
                     ))
                 }
-          </VStack>
-          <HStack  
-            height="115px"
-            width="100%"
-            borderTop="1px solid #838383"
-            borderColor="#838383"
-            padding="3% 5%"
-            spacing={3}
-          >
-                <Avatar name={user.name} width="60px" height="60px" backgroundColor="#838383" color="#FAFAFA"/>
-                <Input 
+            </VStack>
+            <HStack
+                height="115px"
+                width="100%"
+                borderTop="1px solid #838383"
+                borderColor="#838383"
+                padding="3% 5%"
+                spacing={3}
+            >
+                <Avatar name={user.name} width="60px" height="60px" backgroundColor="#838383" color="#FAFAFA" />
+                <Input
+                    value={messageInput}
                     color="#000000"
-                    border="1px solid #000000" 
-                    borderColor="#000000" 
-                    _hover={{border: "1px solid #000000"}}
+                    border="1px solid #000000"
+                    borderColor="#000000"
+                    _hover={{ border: "1px solid #000000" }}
+                    onChange={(e)=> {setMessageInput(e.target.value)}}
                 />
                 <IconButton
                     variant='outline'
                     fontSize='20px'
                     aria-label='send'
-                    icon={<Icon color="#146CF0" as={MdSend}/>}
+                    icon={<Icon color="#146CF0" as={MdSend} />}
+                    onClick={()=> { 
+                        dispatch(ActionCreators.cache.sendMessage(currentFriend, messageInput));
+                        emit("message/input",{ sender: user.email, reciver: currentFriend, message: messageInput }) 
+                        setMessageInput("");
+                    }}
                 />
-          </HStack>
-      </VStack>  
+            </HStack>
+        </VStack>
     );
 };
 

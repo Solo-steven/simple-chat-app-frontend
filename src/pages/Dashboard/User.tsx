@@ -3,9 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../app/reducer";
 import * as ActionCreators from "../../app/actions/creator";
 import { VStack, Box, Avatar, Text, HStack , Divider, Skeleton, SkeletonCircle } from "@chakra-ui/react";
+import { useSocketEmit, useSocketOn, useSocketOff } from "../../socket";
 
 const User: React.FC = () => {
-    // ==== Other Hooks ==== //
+    // ==== Dispatch Hooks ==== //
     const dispatch = useDispatch();
     // ===== Data part ===== //
     const user = useSelector((root: RootState) => root.cache.user);
@@ -14,7 +15,27 @@ const User: React.FC = () => {
     useEffect(()  => {
         if(user.name === "" && user.email === "")
              dispatch(ActionCreators.request.getUserInfo())
+        
     }, [dispatch, user]);
+    // ======= Socket Part ====== //
+    // when user email change, init socket by new user email.
+    const emit = useSocketEmit();
+    useEffect(() => {
+            emit("init", user.email);
+    },[emit, user.email])
+    // when friends change, start listen message/output event.
+    const on = useSocketOn();
+    const off = useSocketOff();
+    useEffect(() => {
+        on("message/output",(data) => {
+            console.log(data);
+            const {sender, message} = data;
+            dispatch(ActionCreators.cache.receiveMessage(sender, message));
+        })
+        return () => {
+            off("message/output");
+        }
+    }, [on, off, friends, dispatch]);
     // when to return a skeleton.
     if(user.name === "" && user.email === "")
         return (

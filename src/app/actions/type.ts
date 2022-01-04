@@ -7,6 +7,8 @@ export const control = {
 export const cache = {
     fetchUserInfo: "Cache/fetch_user_info",
     fetchMessage: "Cache/fetch_message",
+    receiveMessage:"Cache/receive_message",
+    sendMessage: "Cache/send_message"
 }
 export const authForm = {
     clearForm: "AuthForm/Clear_From",

@@ -20,26 +20,61 @@ const initialState: CacheState={
     friends: [],
 }
 export function CacheReducer(state: CacheState = initialState, action: any) {
-    let newState= Object.assign({},state);
+    let newState= Object.assign({},state), index = 0;
     switch(action.type) {
         case cache.fetchUserInfo:
             newState.user = action.payload.user;
             newState.friends = [...action.payload.friends]
             break;
         case cache.fetchMessage:
-            let i =0 ;
-            for(i=0;i<newState.friends.length ; ++i) {
-                if(newState.friends[i].email === action.payload.friend)
+            for(index=0;index<newState.friends.length ; ++index) {
+                if(newState.friends[index].email === action.payload.friend)
                     break;
             }
-            if(i === newState.friends.length)
-                break;
+            if(index === newState.friends.length) break;
             newState.friends = [
-                ...newState.friends.slice(0, i), 
-                { ...newState.friends[i], message: action.payload.message}, 
-                ...newState.friends.slice(i+1, newState.friends.length)
+                ...newState.friends.slice(0, index), 
+                { ...newState.friends[index], message: action.payload.message}, 
+                ...newState.friends.slice(index+1, newState.friends.length)
             ]
             break;
+        case cache.receiveMessage:
+            for(index=0;index<newState.friends.length ; ++index) {
+                if(newState.friends[index].email === action.payload.sender)
+                    break;
+            }
+            if(index === newState.friends.length) break;
+            newState.friends[index] = {
+                ...newState.friends[index],
+                message: [
+                    ...newState.friends[index].message, 
+                    {  
+                       sender: action.payload.sender, 
+                       reciver: newState.user.email,
+                       content: action.payload.message,
+                       timestamp: action.payload.timestamp
+                    }
+                ]
+            }
+            break;
+        case cache.sendMessage:
+            for(index=0;index<newState.friends.length ; ++index) {
+                if(newState.friends[index].email === action.payload.reciver)
+                    break;
+            }
+            if(index === newState.friends.length) break;
+            newState.friends[index] = {
+                ...newState.friends[index],
+                message: [
+                    ...newState.friends[index].message, 
+                    {  
+                       sender: newState.user.email, 
+                       reciver: action.payload.reciver,
+                       content: action.payload.message,
+                       timestamp: action.payload.timestamp
+                    }
+                ]
+            }
     }
     return newState;
 }

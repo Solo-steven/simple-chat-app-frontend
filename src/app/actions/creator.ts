@@ -31,6 +31,14 @@ export const cache = {
     fetchMessage: (friend: string, message: Array<string>) => ({
         type: Type.cache.fetchMessage,
         payload: { friend, message }
+    }),
+    receiveMessage:(sender: string, message: string) => ({
+        type: Type.cache.receiveMessage,
+        payload: { sender, message, timestamp:(new Date()).toISOString()}
+    }),
+    sendMessage:(reciver: string, message: string) => ({
+        type: Type.cache.sendMessage,
+        payload: {reciver, message, timestamp:(new Date()).toISOString() }
     })
 }
 
