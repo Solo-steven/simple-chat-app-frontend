@@ -43,8 +43,6 @@ export function ControlReducer(state: ControlState = initialState, action: any) 
         case control.taggleModal:
             newState.modal = { ...action.payload};
             break;
-        default:
-            break;
     }
     return newState;
 }

@@ -32,8 +32,6 @@ export function AuthFormReducer(state: AuthFormState = initialState, action: any
         case authForm.changePasswordCheck:
             newState.passwordCheck = action.payload;
             break;
-        default:
-            break;
     }
     return newState;
 }

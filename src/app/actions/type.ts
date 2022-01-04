@@ -3,7 +3,9 @@ export const control = {
     setAuth: "Control/set_auth",
     taggleModal: "AuthForm/taggle_Modal"
 };
-
+export const cache = {
+    fetchUserInfo: "Cache/fetch_user_info",
+}
 export const authForm = {
     clearForm: "AuthForm/Clear_From",
     changeEmail: "AuthForm/Change_Email",

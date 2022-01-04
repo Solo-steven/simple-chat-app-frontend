@@ -16,6 +16,15 @@ export const control = {
         payload: { flag, type, title, body }
     })
 }
+export const cache = {
+    fetchUserInfo: (
+        user: {name: string, email: string, imgUrl: string | null}, 
+        friends: Array<{name: string, email: string, imgUrl: string | null}>
+    ) => ({
+        type: Type.cache.fetchUserInfo,
+        payload: {user, friends}  
+    })
+}
 
 export const authForm = {
     clearForm: () => ({
@@ -84,6 +93,36 @@ export const request = {
                 dispatch(control.taggleModal(
                     true, "error", "發生未知的錯誤，請再試一次"
                 ))
+            }
+        }
+    },
+    getUserInfo: () => {
+        return async (getState:() => RootState, dispatch: Function) => {
+            try{
+                const token = getState().control.auth.token;
+                const data =  await API.getUserInfo(token);
+                dispatch( cache.fetchUserInfo(
+                    { name: data.name, email: data.email, imgUrl: data.imgUrl}, 
+                    data.friends)
+                )
+            }catch(err: any){
+                console.log(err)
+                dispatch(control.taggleModal(
+                    true, "error", "發生未知的錯誤，請再試一次"
+                ))
+            }
+        }
+    },
+    getMessage: () => {
+        return async (getState: () => RootState, dispatch: Function) => {
+            try {
+                const token = getState().control.auth.token;
+                const user = getState().cache.user.email;
+                const reciver = "H34081034@ncku.edu.tw";
+                const data = await API.getMessage(token, user, reciver);
+                console.log(data);
+            }catch (err: any) {
+
             }
         }
     }
