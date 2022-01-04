@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector  } from "react-redux";
 import { RootState } from "../../app/reducer";
 import * as ActionCreators from "../../app/actions/creator";
@@ -19,14 +19,15 @@ const Message: React.FC = () => {
         }
         return [];
     });
+    console.log(message)
     // if data not exist, when and how to fetch data.
     useEffect(() => {
         // user-email and currentFriend data is control by User.tsx component.
-        if(user.email !== "" && currentFriend !== "" && message.length === 0) {
+        if(currentFriend !== "" && message.length === 0) {
             dispatch(ActionCreators.request.getMessage());
             return;
         }
-    }, [dispatch, user, currentFriend, message]);
+    }, [dispatch, currentFriend, message]);
     // when to return a skeleton.
     if(currentFriend === "" )
         return (
@@ -37,6 +38,7 @@ const Message: React.FC = () => {
                 </HStack>
             </Flex>
         )
+    console.log(message.map(message => message))
     return (
       <VStack flexGrow={1} height="full">
           <VStack flexGrow={1} color="#000000" width="full" overflow="auto">
@@ -44,16 +46,17 @@ const Message: React.FC = () => {
                     .sort((frist, second) =>{
                         const fristDate = new Date(frist.timestamp);
                         const secondDate = new Date(second.timestamp)
-                        if(fristDate > secondDate)
+                        if(fristDate >= secondDate)
                             return 1;
                         return -1;
+                        
                     })
-                    .map(message => (
+                    .map((message, index) => (
                         <Flex
                             width="100%"
                             justify={message.sender === user.email ? "flex-end" : "flex-start"}
                             padding="1.2% 5%"
-                            key={message.timestamp}
+                            key={index}
                         >
                             <Text 
                                 borderRadius="10px"

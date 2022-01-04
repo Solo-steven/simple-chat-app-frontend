@@ -12,11 +12,11 @@ const User: React.FC = () => {
     const friends = useSelector((root: RootState) => root.cache.friends);
     // if data not exist, when and how to fetch.
     useEffect(()  => {
-        if(user.name === "" || friends.length === 0)
+        if(user.name === "" && user.email === "")
              dispatch(ActionCreators.request.getUserInfo())
-    }, [dispatch, user, friends]);
+    }, [dispatch, user]);
     // when to return a skeleton.
-    if(user.name === "" || friends.length === 0)
+    if(user.name === "" && user.email === "")
         return (
             <VStack height="100vh" borderRight="1px solid #838383" px="45px">
                 <HStack spacing={3} marginTop="85px" >
