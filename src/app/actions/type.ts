@@ -1,10 +1,12 @@
 export const control = {
     switchLoginAndRegister: "Control/switch_login_and_register",
     setAuth: "Control/set_auth",
-    taggleModal: "AuthForm/taggle_Modal"
+    taggleModal: "Controltaggle_Modal",
+    changeCurrentFriend: "Control/change_current_friend"
 };
 export const cache = {
     fetchUserInfo: "Cache/fetch_user_info",
+    fetchMessage: "Cache/fetch_message",
 }
 export const authForm = {
     clearForm: "AuthForm/Clear_From",

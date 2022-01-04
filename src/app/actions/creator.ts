@@ -14,15 +14,23 @@ export const control = {
     taggleModal: (flag: boolean = true, type: string ="success", title: string = "", body: string="")  => ({
         type: Type.control.taggleModal,
         payload: { flag, type, title, body }
+    }),
+    changeCurrentFriend: (friend: string) => ({
+        type: Type.control.changeCurrentFriend,
+        payload: friend,
     })
 }
 export const cache = {
     fetchUserInfo: (
         user: {name: string, email: string, imgUrl: string | null}, 
-        friends: Array<{name: string, email: string, imgUrl: string | null}>
+        friends: Array<{name: string, email: string, imgUrl: string | null, message: Array<string>}>
     ) => ({
         type: Type.cache.fetchUserInfo,
         payload: {user, friends}  
+    }),
+    fetchMessage: (friend: string, message: Array<string>) => ({
+        type: Type.cache.fetchMessage,
+        payload: { friend, message }
     })
 }
 
@@ -103,7 +111,7 @@ export const request = {
                 const data =  await API.getUserInfo(token);
                 dispatch( cache.fetchUserInfo(
                     { name: data.name, email: data.email, imgUrl: data.imgUrl}, 
-                    data.friends)
+                    data.friends.map((friend: any) =>({...friend, message: []})))
                 )
             }catch(err: any){
                 console.log(err)
@@ -118,9 +126,9 @@ export const request = {
             try {
                 const token = getState().control.auth.token;
                 const user = getState().cache.user.email;
-                const reciver = "H34081034@ncku.edu.tw";
-                const data = await API.getMessage(token, user, reciver);
-                console.log(data);
+                const friend = getState().control.currentFriend;
+                const data = await API.getMessage(token, user, friend);
+                dispatch(cache.fetchMessage(friend,data))
             }catch (err: any) {
 
             }

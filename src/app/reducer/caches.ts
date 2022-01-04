@@ -2,7 +2,17 @@ import { cache } from "../actions/type";
 
 export interface CacheState {
     user: { name: string; email: string, imgUrl: string | null}
-    friends: Array<{name: string, email: string, imgUrl: string | null}>
+    friends: Array<{
+        name: string, 
+        email: string, 
+        imgUrl: string | null
+        message: Array<{ 
+            sender: string,  
+            reciver: string ,
+            content: string, 
+            timestamp: string
+        }>
+    }>
 }
 
 const initialState: CacheState={
@@ -14,7 +24,21 @@ export function CacheReducer(state: CacheState = initialState, action: any) {
     switch(action.type) {
         case cache.fetchUserInfo:
             newState.user = action.payload.user;
-            newState.friends = [...newState.friends, ...action.payload.friends]
+            newState.friends = [...action.payload.friends]
+            break;
+        case cache.fetchMessage:
+            let i =0 ;
+            for(i=0;i<newState.friends.length ; ++i) {
+                if(newState.friends[i].email === action.payload.friend)
+                    break;
+            }
+            if(i === newState.friends.length)
+                break;
+            newState.friends = [
+                ...newState.friends.slice(0, i), 
+                { ...newState.friends[i], message: action.payload.message}, 
+                ...newState.friends.slice(i+1, newState.friends.length)
+            ]
             break;
     }
     return newState;

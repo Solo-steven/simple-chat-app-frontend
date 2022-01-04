@@ -11,7 +11,8 @@ export interface ControlState  {
         type: string,
         title: string,
         body: string,
-    }
+    },
+    currentFriend: string,
 };
 
 const initialState: ControlState = {
@@ -26,6 +27,7 @@ const initialState: ControlState = {
         title: "",
         body: "",
     },
+    currentFriend: "",
 }
 
 export function ControlReducer(state: ControlState = initialState, action: any) {
@@ -42,6 +44,9 @@ export function ControlReducer(state: ControlState = initialState, action: any) 
             break;
         case control.taggleModal:
             newState.modal = { ...action.payload};
+            break;
+        case control.changeCurrentFriend:
+            newState.currentFriend = action.payload
             break;
     }
     return newState;
