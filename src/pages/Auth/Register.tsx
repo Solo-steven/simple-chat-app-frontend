@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../app/reducer";
 import * as ActionCreators from "../../app/actions/creator";
-import { Box, Input, InputGroup, InputLeftElement, Icon, Button, Text, VStack } from "@chakra-ui/react";
-import { MdEmail, MdLock, MdPerson } from "react-icons/md"
+import { Box, Input, InputGroup, InputLeftElement, InputRightElement, Icon, Button, Text, VStack } from "@chakra-ui/react";
+import { MdEmail, MdLock, MdPerson } from "react-icons/md";
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 
 const Register: React.FC = () => {
+    const [showPassword, setShowPassword] = useState([false, false]);
     const [errorFlags, setErrorFlags] = useState([false, false, false, false]);
     const authForm = useSelector((root: RootState) => root.authForm);
     const dispatch = useDispatch();
@@ -37,6 +39,8 @@ const Register: React.FC = () => {
                         children={<Icon as={MdPerson}/>}
                     />
                     <Input 
+                        _placeholder={{color: "#bbbbbb"}}
+                        placeholder="使用者名稱"
                         isInvalid={errorFlags[0]}
                         value={authForm.name}
                         color="#000000"
@@ -61,6 +65,8 @@ const Register: React.FC = () => {
                         children={<Icon as={MdEmail}/>}
                     />
                     <Input 
+                        _placeholder={{color: "#bbbbbb"}}
+                        placeholder="信箱"
                         isInvalid={errorFlags[1]}
                         value={authForm.email}
                         color="#000000"
@@ -85,6 +91,9 @@ const Register: React.FC = () => {
                         children={<Icon as={MdLock}/>}
                     />
                     <Input 
+                        _placeholder={{color: "#bbbbbb"}}
+                        placeholder="密碼"
+                        type={showPassword[0] ? "text" : "password"}
                         isInvalid={errorFlags[2]}
                         value={authForm.password}
                         color="#000000"
@@ -102,6 +111,12 @@ const Register: React.FC = () => {
                             dispatch(ActionCreators.authForm.changePassword(e.target.value)) 
                         }}
                     />
+                    <InputRightElement
+                        cursor="pointer"
+                        onClick={() => setShowPassword(pre => [!pre[0], pre[1]])}
+                        color="#000000"
+                        children={<Icon as={ showPassword[0] ? AiFillEye: AiFillEyeInvisible }/>}
+                    />
                 </InputGroup>
                     <InputGroup >
                     <InputLeftElement
@@ -109,6 +124,9 @@ const Register: React.FC = () => {
                         children={<Icon as={MdLock}/>}
                     />
                     <Input 
+                        _placeholder={{color: "#bbbbbb"}}
+                        placeholder="再輸入一次密碼"
+                        type={showPassword[1] ? "text" : "password"}
                         isInvalid={errorFlags[3]}
                         value={authForm.passwordCheck}
                         color="#000000"
@@ -125,6 +143,12 @@ const Register: React.FC = () => {
                             }
                             dispatch(ActionCreators.authForm.changePasswordCheck(e.target.value))
                         }}
+                    />
+                    <InputRightElement
+                        cursor="pointer"
+                        onClick={() => setShowPassword(pre => [pre[0], !pre[1]])}
+                        color="#000000"
+                        children={<Icon as={ showPassword[1] ? AiFillEye: AiFillEyeInvisible }/>}
                     />
                 </InputGroup>
             </VStack>
@@ -162,6 +186,7 @@ const Register: React.FC = () => {
                 cursor="pointer"
                 marginBottom="10px"
                 onClick={()=> dispatch(ActionCreators.control.switchLoginAndRegister())}
+                userSelect="none"
             >
                 {"已經有帳號了？那去登入吧！"}
             </Text>

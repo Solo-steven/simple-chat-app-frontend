@@ -3,10 +3,12 @@ import { Redirect } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../app/reducer";
 import * as ActionCreators from "../../app/actions/creator";
-import { Box, Input, InputGroup, InputLeftElement, Icon, Button, Text } from "@chakra-ui/react";
-import { MdEmail, MdLock } from "react-icons/md"
+import { Box, Input, InputGroup, InputLeftElement, InputRightElement, Icon, Button, Text } from "@chakra-ui/react";
+import { MdEmail, MdLock } from "react-icons/md";
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 
 const Login: React.FC = () => {
+    const [showPassword, setShowPassword] = useState(false);
     const [errorFlags, setErrorFlags] = useState([false, false]);
     const authForm = useSelector((root: RootState) => root.authForm);
     const authFlag = useSelector((root: RootState) => root.control.auth.flag);
@@ -43,6 +45,8 @@ const Login: React.FC = () => {
                     children={<Icon as={MdEmail}/>}
                 />
                 <Input 
+                    _placeholder={{color: "#bbbbbb"}}
+                    placeholder="信箱"
                     isInvalid={errorFlags[0]}
                     value={authForm.email}
                     color="#000000"
@@ -61,6 +65,9 @@ const Login: React.FC = () => {
                     children={<Icon as={MdLock}/>}
                 />
                 <Input 
+                    _placeholder={{color: "#bbbbbb"}}
+                    placeholder="密碼"
+                    type={showPassword ? "text" : "password"}
                     isInvalid={errorFlags[1]}
                     value={authForm.password}
                     color="#000000"
@@ -71,6 +78,12 @@ const Login: React.FC = () => {
                         if(errorFlags[1]) setErrorFlags(pre => [pre[0], false]);
                         dispatch(ActionCreators.authForm.changePassword(e.target.value))
                     }}
+                />
+                <InputRightElement
+                    cursor="pointer"
+                    onClick={() => setShowPassword(pre => !pre)}
+                    color="#000000"
+                    children={<Icon as={ showPassword ? AiFillEye: AiFillEyeInvisible }/>}
                 />
             </InputGroup>
             <Text
@@ -108,6 +121,7 @@ const Login: React.FC = () => {
                 cursor="pointer"
                 marginBottom="70px"
                 onClick={()=> dispatch(ActionCreators.control.switchLoginAndRegister())}
+                userSelect="none"
             >
                 {"還沒有帳號嗎？那來註冊吧！"}
             </Text>
