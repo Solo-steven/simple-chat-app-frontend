@@ -15,7 +15,6 @@ const User: React.FC = () => {
     useEffect(()  => {
         if(user.name === "" && user.email === "")
              dispatch(ActionCreators.request.getUserInfo())
-        
     }, [dispatch, user]);
     // ======= Socket Part ====== //
     // when user email change, init socket by new user email.
@@ -27,13 +26,17 @@ const User: React.FC = () => {
     const on = useSocketOn();
     const off = useSocketOff();
     useEffect(() => {
-        on("message/output",(data) => {
-            console.log(data);
-            const {sender, message} = data;
-            dispatch(ActionCreators.cache.receiveMessage(sender, message));
-        })
+        let flag = false;
+        if(friends.length !== 0) {
+            flag = true;
+            on("message/output",(data) => {
+                console.log(data);
+                const {sender, message} = data;
+                dispatch(ActionCreators.cache.receiveMessage(sender, message));
+            })
+        }
         return () => {
-            off("message/output");
+            if(flag) off("message/output");
         }
     }, [on, off, friends, dispatch]);
     // when to return a skeleton.

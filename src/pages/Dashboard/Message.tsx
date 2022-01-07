@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../app/reducer";
 import * as ActionCreators from "../../app/actions/creator";
 import { VStack, HStack, Flex, Icon, Text, Input, Avatar, IconButton } from "@chakra-ui/react";
 import { MdAdsClick, MdSend } from "react-icons/md";
 import { useSocketEmit } from "../../socket";
-
-
+/**
+ * 
+ * 
+ */
 const Message: React.FC = () => {
     //  ===== Input ===== //
     // don't need to put in redux, because if not using on middleware for request 
@@ -33,6 +35,13 @@ const Message: React.FC = () => {
             return;
         }
     }, [dispatch, currentFriend, message]);
+    // when message change, scroll to button(exist some bug)
+    const scrollRef = useRef<any>(null);
+    useEffect(() => {
+        if(scrollRef.current !== null ) {
+            scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+        }
+    }, [message.length]);
     // when to return a skeleton.
     if (currentFriend === "")
         return (
@@ -45,7 +54,7 @@ const Message: React.FC = () => {
         )
     return (
         <VStack flexGrow={1} height="full">
-            <VStack flexGrow={1} color="#000000" width="full" overflow="auto">
+            <VStack ref={scrollRef} flexGrow={1} color="#000000" width="full" overflow="auto">
                 {message
                     .sort((frist, second) => {
                         const fristDate = new Date(frist.timestamp);
