@@ -1,10 +1,22 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { createSelector } from "reselect";
 import { RootState } from "../../app/reducer";
 import * as ActionCreators from "../../app/actions/creator";
 import { VStack, HStack, Flex, Icon, Text, Input, Avatar, IconButton } from "@chakra-ui/react";
 import { MdAdsClick, MdSend } from "react-icons/md";
 import { useSocketEmit } from "../../socket";
+
+const messageSelector = createSelector(
+    (root: RootState) => root.control.currentFriend, 
+    (root: RootState) => root.cache.friends,
+    (currentFriend, friends) => {
+        for (let i = 0; i < friends.length; i++) {
+            if (friends[i].email === currentFriend) return friends[i].message;
+        }
+        return [];
+    }
+);
 /**
  * 
  * 
@@ -19,17 +31,10 @@ const Message: React.FC = () => {
     // ===== Data Part ===== //
     const currentFriend = useSelector((root: RootState) => root.control.currentFriend);
     const user = useSelector((root: RootState) => root.cache.user);
-    const message = useSelector((root: RootState) => {
-        const currentFriend = root.control.currentFriend;
-        for (let i = 0; i < root.cache.friends.length; i++) {
-            if (root.cache.friends[i].email === currentFriend)
-                return root.cache.friends[i].message;
-        }
-        return [];
-    });
+    const message = useSelector(messageSelector);
     // if data not exist, when and how to fetch data.
     useEffect(() => {
-        // user-email and currentFriend data is control by User.tsx component.
+        // currentFriend data is control by User.tsx component.
         if (currentFriend !== "" && message.length === 0) {
             dispatch(ActionCreators.request.getMessage());
             return;
