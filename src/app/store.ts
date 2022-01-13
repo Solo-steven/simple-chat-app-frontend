@@ -1,6 +1,6 @@
 import { createStore, applyMiddleware, Middleware } from "redux";
 import { RootReducer } from "./reducer";
-import { composeWithDevTools } from "redux-devtools-extension"
+import { composeWithDevTools } from "redux-devtools-extension";
  
 const middleware: Middleware =  store => next => action => {
     if(typeof action === "function") {

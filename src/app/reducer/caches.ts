@@ -20,61 +20,54 @@ const initialState: CacheState={
     friends: [],
 }
 export function CacheReducer(state: CacheState = initialState, action: any) {
-    let newState= Object.assign({},state), index = 0;
+    let newState= Object.assign({},state);
     switch(action.type) {
         case cache.fetchUserInfo:
             newState.user = action.payload.user;
             newState.friends = [...action.payload.friends]
             break;
         case cache.fetchMessage:
-            for(index=0;index<newState.friends.length ; ++index) {
-                if(newState.friends[index].email === action.payload.friend)
-                    break;
-            }
-            if(index === newState.friends.length) break;
-            newState.friends = [
-                ...newState.friends.slice(0, index), 
-                { ...newState.friends[index], message: action.payload.message}, 
-                ...newState.friends.slice(index+1, newState.friends.length)
-            ]
+            newState.friends = newState.friends.map((friend) =>{
+                if(friend.email === action.payload.friend) {
+                    return {
+                        ...friend, message: action.payload.message,
+                    }
+                }
+                return friend;
+            })
             break;
         case cache.receiveMessage:
-            for(index=0;index<newState.friends.length ; ++index) {
-                if(newState.friends[index].email === action.payload.sender)
-                    break;
-            }
-            if(index === newState.friends.length) break;
-            newState.friends[index] = {
-                ...newState.friends[index],
-                message: [
-                    ...newState.friends[index].message, 
-                    {  
-                       sender: action.payload.sender, 
-                       reciver: newState.user.email,
-                       content: action.payload.message,
-                       timestamp: action.payload.timestamp
+            newState.friends = newState.friends.map((friend) => {
+                if(friend.email === action.payload.sender) {
+                    return {
+                        ...friend,
+                        message: [...friend.message, {
+                            sender: action.payload.sender, 
+                            reciver: newState.user.email,
+                            content: action.payload.message,
+                            timestamp: action.payload.timestamp
+                        }]
                     }
-                ]
-            }
+                }
+                return friend;
+            })
             break;
         case cache.sendMessage:
-            for(index=0;index<newState.friends.length ; ++index) {
-                if(newState.friends[index].email === action.payload.reciver)
-                    break;
-            }
-            if(index === newState.friends.length) break;
-            newState.friends[index] = {
-                ...newState.friends[index],
-                message: [
-                    ...newState.friends[index].message, 
-                    {  
-                       sender: newState.user.email, 
-                       reciver: action.payload.reciver,
-                       content: action.payload.message,
-                       timestamp: action.payload.timestamp
+            newState.friends = newState.friends.map((friend) => {
+                if(friend.email === action.payload.reciver) {
+                    return {
+                        ...friend,
+                        message: [...friend.message, {
+                            sender: newState.user.email, 
+                            reciver: action.payload.reciver,
+                            content: action.payload.message,
+                            timestamp: action.payload.timestamp
+                        }]
                     }
-                ]
-            }
+                }
+                return friend;
+            })
+            break;
     }
     return newState;
 }
