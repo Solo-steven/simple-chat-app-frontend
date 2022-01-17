@@ -3,9 +3,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "reselect";
 import { RootState } from "../../app/reducer";
 import * as ActionCreators from "../../app/actions/creator";
-import { VStack, HStack, Flex, Icon, Text, Input, Avatar, IconButton } from "@chakra-ui/react";
+import { Box, VStack, HStack, Flex, Icon, Text, Input, Avatar, IconButton, Skeleton } from "@chakra-ui/react";
 import { MdAdsClick, MdSend } from "react-icons/md";
 import { useSocketEmit } from "../../socket";
+import { FixedSizeList as List } from "react-window";
+import AutoSizer from "react-virtualized-auto-sizer";
 
 const messageSelector = createSelector(
     (root: RootState) => root.control.currentFriend, 
@@ -31,22 +33,49 @@ const Message: React.FC = () => {
     // ===== Data Part ===== //
     const currentFriend = useSelector((root: RootState) => root.control.currentFriend);
     const user = useSelector((root: RootState) => root.cache.user);
-    const message = useSelector(messageSelector);
+    const isMessageEnd = useSelector((root: RootState) => {
+        const currentFriend= root.control.currentFriend;
+        const friends = root.cache.friends;
+        for (let i = 0; i < friends.length; i++) {
+            if (friends[i].email === currentFriend) return friends[i].isMessageEnd;
+        }
+        return false;
+    })
+    const messages = useSelector(messageSelector);
     // if data not exist, when and how to fetch data.
     useEffect(() => {
         // currentFriend data is control by User.tsx component.
-        if (currentFriend !== "" && message.length === 0) {
+        if (currentFriend !== "" && messages.length === 0) {
             dispatch(ActionCreators.request.getMessage());
             return;
         }
-    }, [dispatch, currentFriend, message]);
+    }, [dispatch, currentFriend, messages]);
     // when message change, scroll to button(exist some bug)
     const scrollRef = useRef<any>(null);
     useEffect(() => {
         if(scrollRef.current !== null ) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight
         }
-    }, [message.length]);
+    }, [messages.length]);
+    // === IntersectionObserver ==== //
+    const topRef = useRef<any>(null);
+    useEffect(() => {
+        let observer: IntersectionObserver | null = null ;
+        if(topRef.current !== null) {
+            observer = new IntersectionObserver(()=> {
+                setTimeout(() => {
+                    dispatch(ActionCreators.request.getMessage());
+                }, 3000)
+            }, {threshold: 0.5});
+            observer.observe(topRef.current);
+        }
+        return () => {
+            if(observer !== null) {
+                if(topRef.current !== null) observer.unobserve(topRef.current);
+                observer.disconnect();
+            }
+        }
+    }, [messages.length, dispatch]);
     // when to return a skeleton.
     if (currentFriend === "")
         return (
@@ -59,35 +88,55 @@ const Message: React.FC = () => {
         )
     return (
         <VStack flexGrow={1} height="full">
-            <VStack ref={scrollRef} flexGrow={1} color="#000000" width="full" overflow="auto">
-                {message
-                    .sort((frist, second) => {
-                        const fristDate = new Date(frist.timestamp);
-                        const secondDate = new Date(second.timestamp)
-                        if (fristDate >= secondDate)
-                            return 1;
-                        return -1;
-
-                    })
-                    .map((message, index) => (
-                        <Flex
-                            width="100%"
-                            justify={message.sender === user.email ? "flex-end" : "flex-start"}
-                            padding="1.2% 5%"
-                            key={index}
+            <Box flexGrow={1} color="#000000" width="full" overflow="auto">
+                <AutoSizer style={{height: "100%", width: "100%"}}>
+                    {({height, width}) => (
+                        <List
+                            width={width}
+                            height={height}
+                            itemData={
+                                messages.sort((frist, second) => {
+                                    const fristDate = new Date(frist.timestamp);
+                                    const secondDate = new Date(second.timestamp)
+                                    if (fristDate >= secondDate)
+                                        return 1;
+                                    return -1;
+                            })}
+                            itemCount={isMessageEnd ? messages.length : messages.length+2 }
+                            itemSize={80}
+                            ref={scrollRef} 
                         >
-                            <Text
-                                borderRadius="10px"
-                                backgroundColor="#838383"
-                                color="#FAFAFA"
-                                padding="15px 25px"
-                            >
-                                {message.content}
-                            </Text>
-                        </Flex>
-                    ))
-                }
-            </VStack>
+                        { (({index, style, data}) => {
+                            if(!isMessageEnd && index < 2 ) {
+                                return (
+                                    <Flex ref={index ===0 ? topRef : null} width="100%" justify="flex-start" padding="1.2% 5%">
+                                        <Skeleton width="30%" height='50px' borderRadius="10px" />
+                                    </Flex>
+                                )
+                            }
+                            return (
+                                <Flex
+                                    width="100%"
+                                    justify={data[isMessageEnd ? index : index-2].sender === user.email ? "flex-end" : "flex-start"}
+                                    padding="1.2% 5%"
+                                    key={index}
+                                    style={style}
+                                >
+                                    <Text
+                                        borderRadius="10px"
+                                        backgroundColor="#838383"
+                                        color="#FAFAFA"
+                                        padding="15px 25px"
+                                    >
+                                        {data[isMessageEnd ? index : index-2].content}
+                                    </Text>
+                                </Flex>
+                            )})
+                        }
+                        </List>
+                    )}
+                </AutoSizer>
+            </Box>
             <HStack
                 height="115px"
                 width="100%"

@@ -6,6 +6,7 @@ export interface CacheState {
         name: string, 
         email: string, 
         imgUrl: string | null
+        isMessageEnd: boolean,
         message: Array<{ 
             sender: string,  
             reciver: string ,
@@ -29,8 +30,11 @@ export function CacheReducer(state: CacheState = initialState, action: any) {
         case cache.fetchMessage:
             newState.friends = newState.friends.map((friend) =>{
                 if(friend.email === action.payload.friend) {
+                    if(action.payload.message.length === 0) {
+                        return {...friend, isMessageEnd: true};
+                    }
                     return {
-                        ...friend, message: action.payload.message,
+                        ...friend, message: [...friend.message, ...action.payload.message],
                     }
                 }
                 return friend;

@@ -119,7 +119,7 @@ export const request = {
                 const data =  await API.getUserInfo(token);
                 dispatch( cache.fetchUserInfo(
                     { name: data.name, email: data.email, imgUrl: data.imgUrl}, 
-                    data.friends.map((friend: any) =>({...friend, message: []})))
+                    data.friends.map((friend: any) =>({...friend, message: [], isMessageEnd: false})))
                 )
             }catch(err: any){
                 console.log(err)
@@ -132,11 +132,15 @@ export const request = {
     getMessage: () => {
         return async (getState: () => RootState, dispatch: Function) => {
             try {
+                const currentFriend = getState().control.currentFriend;
+                const friend = getState().cache.friends.filter((friend) => friend.email ===  currentFriend)[0];
+                if(friend.isMessageEnd) return;
                 const token = getState().control.auth.token;
                 const user = getState().cache.user.email;
-                const friend = getState().control.currentFriend;
-                const data = await API.getMessage(token, user, friend);
-                dispatch(cache.fetchMessage(friend,data))
+                const offset = friend.message.length;
+                const data = await API.getMessage(token, user, currentFriend, offset);
+                console.log(data);
+                dispatch(cache.fetchMessage(currentFriend,data))
             }catch (err: any) {
 
             }

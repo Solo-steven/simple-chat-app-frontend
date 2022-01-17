@@ -19,8 +19,8 @@ export async function getUserInfo(token: string) {
             .then(response  => response.data)
             .catch(error => { throw error});
 }
-export async function getMessage(token: string, sender: string, reciver: string) {
-    return await Header.get(`/message?sender=${sender}&reciver=${reciver}`, { headers: { 'Authorization': token}})
+export async function getMessage(token: string, sender: string, reciver: string, offset: number =0) {
+    return await Header.get(`/message?sender=${sender}&reciver=${reciver}&offset=${offset}`, { headers: { 'Authorization': token}})
         .then(response => response.data)
         .catch(error => { throw error})
 }
