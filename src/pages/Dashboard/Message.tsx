@@ -19,10 +19,7 @@ const messageSelector = createSelector(
         return [];
     }
 );
-/**
- * 
- * 
- */
+
 const Message: React.FC = () => {
     //  ===== Input ===== //
     // don't need to put in redux, because if not using on middleware for request 
